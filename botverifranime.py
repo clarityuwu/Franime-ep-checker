@@ -37,11 +37,22 @@ for url in urls:
             try:
                 season = re.search(r's=(\d+)', driver.current_url).group(1)
                 episode = re.search(r'ep=(\d+)', driver.current_url).group(1)
+                anime_name = re.search(r'franime.fr/anime/(.*?)\?', driver.current_url).group(1)
                 with open('errors.txt', 'a') as f:
-                    f.write(f"Error: Aucun Lecteur Disponible. Saison: {season}, Episode: {episode}\n")
+                    f.write(f"Error: Aucun Lecteur Disponible. Anime: {anime_name}, Saison: {season}, Episode: {episode}\n")
                 next_button = wait.until(EC.presence_of_element_located((By.XPATH, "//button[.//p[text()='Épisode suivant' or text()='Saison suivante']]")))
-                next_button.click()
-                continue
+                button_text = next_button.text
+                if button_text == "Saison suivante":
+                    next_button.click()
+                else:
+                    background_color = driver.execute_script("return window.getComputedStyle(arguments[0]).backgroundColor;", next_button)
+                    rgb_color = tuple(map(int, background_color[4:-1].split(',')))
+                    if rgb_color == (23, 25, 31):
+                        print("It's finished")
+                        break  
+                    else:
+                        next_button.click()
+                        continue
             except:
                 pass
         
