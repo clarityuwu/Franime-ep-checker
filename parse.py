@@ -26,3 +26,7 @@ ranges.append((start, end) if start != end else (start,))
 
 for r in ranges:
     print('[' + ';'.join(map(str, r)) + ']', end=' ')
+
+# Clear the content of the file
+with open('errors.txt', 'w') as f:
+    pass

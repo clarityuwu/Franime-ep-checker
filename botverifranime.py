@@ -33,6 +33,8 @@ for url in urls:
             pass
         elif 'Lecteur S22' in players_text and ('Lecteur SENDVID' in players_text or 'Lecteur SIBNET' in players_text):
             pass
+        elif 'Lecteur INDISPONIBLE' not in players_text and 'Lecteur S22' not in players_text:
+            pass
         else :
             try:
                 season = re.search(r's=(\d+)', driver.current_url).group(1)
@@ -69,34 +71,24 @@ for url in urls:
 
         watch_episode_button = wait.until(EC.element_to_be_clickable((By.ID, "play_button")))
         watch_episode_button.click()
+        print(f"Watching {driver.current_url}")
         time.sleep(1)
 
-        if player.upper() == "SENDVID":
-            try:
-                iframe = wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[contains(@class, 'aspect-video flex w-full')]")))
-                driver.switch_to.frame(iframe)
+        try:
+            iframe = wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[contains(@class, 'aspect-video flex w-full')]")))
+            driver.switch_to.frame(iframe)
+
+            if player.upper() == "SENDVID":
                 try:
-                    error_message = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[contains(text(), 'No compatible source was found for this media.')]")))
-                    if error_message:
-                        season = re.search(r's=(\d+)', driver.current_url).group(1)
-                        episode = re.search(r'ep=(\d+)', driver.current_url).group(1)
-                        anime_name = re.search(r'franime.fr/anime/(.*?)\?', driver.current_url).group(1)
-                        with open('errors.txt', 'a') as f:
-                            f.write(f"Error: Video Error. Anime: {anime_name}, Saison: {season}, Episode: {episode}\n")
+                    hosting_text = wait.until(EC.visibility_of_element_located((By.XPATH, "//a[text()='Sendvid - FREE VIDEO HOSTING']")))
+                    print("Sendvid - FREE VIDEO HOSTING is present")
                 except TimeoutException:
                     season = re.search(r's=(\d+)', driver.current_url).group(1)
                     episode = re.search(r'ep=(\d+)', driver.current_url).group(1)
                     anime_name = re.search(r'franime.fr/anime/(.*?)\?', driver.current_url).group(1)
                     with open('errors.txt', 'a') as f:
-                        f.write(f"Error: Cross Origin Error. Anime: {anime_name}, Saison: {season}, Episode: {episode}\n")
-            except:
-                pass
-
-        if player.upper() == "SIBNET":
-            try:
-                iframe = wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[contains(@class, 'aspect-video flex w-full')]")))
-                driver.switch_to.frame(iframe)
-
+                        f.write(f"Error: Sendvid - FREE VIDEO HOSTING not found. Anime: {anime_name}, Saison: {season}, Episode: {episode}\n")
+            elif player.upper() == "SIBNET":
                 error_message = wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='videostatus']/p[text()='Видео недоступно.']")))
                 if error_message:
                     season = re.search(r's=(\d+)', driver.current_url).group(1)
@@ -104,12 +96,13 @@ for url in urls:
                     anime_name = re.search(r'franime.fr/anime/(.*?)\?', driver.current_url).group(1)
                     with open('errors.txt', 'a') as f:
                         f.write(f"Error: Lien Down. Anime: {anime_name}, Saison: {season}, Episode: {episode}\n")
-            except:
-                pass
+        except:
+            pass
 
         driver.switch_to.default_content()
         next_button = wait.until(EC.presence_of_element_located((By.XPATH, "//button[.//p[text()='Épisode suivant' or text()='Saison suivante']]")))
         button_text = next_button.text
+
         if button_text == "Saison suivante":
             next_button.click()
         else:
