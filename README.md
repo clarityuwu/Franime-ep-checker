@@ -19,5 +19,5 @@ Franime Checker D'épisode
 
 # Installation
 
-Vous devez installer Firefox et les geckodriver https://github.com/mozilla/geckodriver/releases puis mettre le driver dans le dossier du script
-Vous pouvez aller à [Release](https://github.com/clarityuwu/Franime-ep-checker/releases) pour télécharger la dernière version de l'application sous format exe
+Vous devez installer Firefox et les geckodriver https://github.com/mozilla/geckodriver/releases puis mettre le driver dans le dossier du script puis
+vous pouvez aller à [Release](https://github.com/clarityuwu/Franime-ep-checker/releases) pour télécharger la dernière version de l'application sous format exe
